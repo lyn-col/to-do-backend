@@ -1,0 +1,38 @@
+version: '3.9'
+
+networks:
+    go_network: 
+
+services:
+  go-app:
+    container_name: go-app
+    build: .
+    environment:
+      DB_HOST: go_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: todo
+      DB_PORT: 5432
+      DATABASE_URL: "host=go_db user=postgres password=postgres dbname=todo sslmode=disable"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - go_db
+    networks:
+      - go_network
+  go_db:
+    container_name: go_db
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - go_network
+
+volumes:  
+  pgdata: {}
