@@ -17,7 +17,6 @@ type Server struct {
 
 func NewServer(port string, db *gorm.DB, logger *log.Logger) *Server {
 	r := gin.Default()
-	SetupRoutes(r, db, logger) // Pass DB to routes
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"}, // Allow all origins, restrict it for production
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -26,6 +25,8 @@ func NewServer(port string, db *gorm.DB, logger *log.Logger) *Server {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour, // Cache preflight request for 12 hours
 	}))
+	SetupRoutes(r, db, logger) // Pass DB to routes
+	
 	srv := &Server{
 		Router: r,
 		HTTPServer: &http.Server{

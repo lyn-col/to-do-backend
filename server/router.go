@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"to-do-backend/controllers"
+	"to-do-backend/services"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,8 +13,12 @@ import (
 // SetupRoutes initializes API routes with controllers
 func SetupRoutes(r *gin.Engine, db *gorm.DB, logger *log.Logger) {
 	// Initialize controllers
-	authController := controllers.NewAuthController(db, logger)
-	taskController := controllers.NewTaskController(db, logger)
+	authService := services.NewAuthService(db)
+	taskService := services.NewTaskService(db)
+
+	// Initialize controllers with services
+	authController := controllers.NewAuthController(db, authService, logger)
+	taskController := controllers.NewTaskController(db, taskService, logger)
 
 	// Auth routes
 	auth := r.Group("/auth")
@@ -25,8 +30,8 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB, logger *log.Logger) {
 	// Task routes
 	tasks := r.Group("/tasks")
 	{
-		tasks.GET("/", taskController.GetTasks)
-		tasks.POST("/", taskController.CreateTask)
+		tasks.GET("", taskController.GetTasks)
+		tasks.POST("", taskController.CreateTask)
 		tasks.PUT("/:id", taskController.UpdateTask)
 		tasks.DELETE("/:id", taskController.DeleteTask)
 	}
