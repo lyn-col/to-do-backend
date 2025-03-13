@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy the source code
 COPY . . 
 
+RUN go mod tidy
 # Download and install the dependencies
 RUN go get -d -v ./...
 
